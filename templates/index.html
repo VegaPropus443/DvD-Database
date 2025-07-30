@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DVD Database</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">DVD Database</h1>
+        <div class="row justify-content-center mb-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" id="dvdInput" class="form-control" placeholder="Enter DVD Title">
+                    <button class="btn btn-primary" onclick="checkDVD()">Check</button>
+                </div>
+            </div>
+        </div>
+        <div id="result" class="alert alert-info d-none"></div>
+        <div id="omdb" class="mt-4"></div>
+    </div>
+    <script>
+        function checkDVD() {
+            const item = document.getElementById('dvdInput').value;
+            fetch('/check', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({item: item})
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                if (data.location && data.omdb) {
+                    resultDiv.classList.remove('d-none');
+                    resultDiv.innerText = data.location;
+                    let omdbHtml = `<div class="card"><div class="card-body">`;
+                    omdbHtml += `<h4 class="card-title">${data.omdb.Title} (${data.omdb.Year})</h4>`;
+                    omdbHtml += `<p><strong>Rated:</strong> ${data.omdb.Rated}</p>`;
+                    omdbHtml += `<p><strong>Released:</strong> ${data.omdb.Released}</p>`;
+                    omdbHtml += `<p><strong>Runtime:</strong> ${data.omdb.Runtime}</p>`;
+                    omdbHtml += `<p><strong>Genre:</strong> ${data.omdb.Genre}</p>`;
+                    omdbHtml += `<p><strong>Director:</strong> ${data.omdb.Director}</p>`;
+                    omdbHtml += `<p><strong>Actors:</strong> ${data.omdb.Actors}</p>`;
+                    omdbHtml += `<p><strong>Plot:</strong> ${data.omdb.Plot}</p>`;
+                    if (data.omdb.Poster && data.omdb.Poster !== "N/A") {
+                        omdbHtml += `<img src="${data.omdb.Poster}" alt="Poster" class="img-fluid mb-3" style="max-width:200px;">`;
+                    }
+                    if (data.omdb.Ratings && data.omdb.Ratings.length > 0) {
+                        omdbHtml += `<ul class="list-group list-group-flush">`;
+                        data.omdb.Ratings.forEach(rating => {
+                            omdbHtml += `<li class="list-group-item">${rating.Source}: ${rating.Value}</li>`;
+                        });
+                        omdbHtml += `</ul>`;
+                    }
+                    omdbHtml += `</div></div>`;
+                    document.getElementById('omdb').innerHTML = omdbHtml;
+                } else if (data.result) {
+                    resultDiv.classList.remove('d-none');
+                    resultDiv.innerText = data.result;
+                    document.getElementById('omdb').innerHTML = '';
+                }
+            });
+        }
+
+        document.getElementById('dvdInput').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                checkDVD();
+            }
+        });
+    </script>
+</body>
+</html>
