@@ -7,25 +7,25 @@ OMDB_API_KEY = '1cc488d6'
 app = Flask(__name__)
 
 book1 = [
-         {"title": "Inception", "book": "Book 1", "page": 1, "slot":1},
-         {"title": "The Dark Knight", "book": "Book 1", "page": 1, "slot":2},
-         {"title": "Interstellar", "book": "Book 1", "page": 1, "slot":3},
-         {"title": "Dunkirk", "book": "Book 1", "page": 1, "slot":4},
-         {"title": "Tenet", "book": "Book 1", "page": 2, "slot":1}
+            {"title": "Inception", "book": "Book 1", "page": 1, "slot":1},
+            {"title": "The Dark Knight", "book": "Book 1", "page": 1, "slot":2},
+            {"title": "Interstellar", "book": "Book 1", "page": 1, "slot":3},
+            {"title": "Dunkirk", "book": "Book 1", "page": 1, "slot":4},
+            {"title": "Tenet", "book": "Book 1", "page": 2, "slot":1}
          ]
 book2 = [
-         {"title": "The Matrix", "book": "Book 2", "page": 1, "slot":1},
-         {"title": "seven", "book": "Book 2", "page": 1, "slot":2},
-         {"title": "eight", "book": "Book 2", "page": 1, "slot":3},
-         {"title": "nine", "book": "Book 2", "page": 1, "slot":4},
-         {"title": "ten", "book": "Book 2", "page": 2, "slot":1}
+            {"title": "The Matrix", "book": "Book 2", "page": 1, "slot":1},
+            {"title": "seven", "book": "Book 2", "page": 1, "slot":2},
+            {"title": "eight", "book": "Book 2", "page": 1, "slot":3},
+            {"title": "nine", "book": "Book 2", "page": 1, "slot":4},
+            {"title": "ten", "book": "Book 2", "page": 2, "slot":1}
          ]
 book3 = [
-         {"title": "eleven", "book": "Book 3", "page": 1, "slot":1},
-         {"title": "twelve", "book": "Book 3", "page": 1, "slot":2},
-         {"title": "thirteen", "book": "Book 3", "page": 1, "slot":3},
-         {"title": "fourteen", "book": "Book 3", "page": 1, "slot":4},
-         {"title": "fifteen", "book": "Book 3", "page": 2, "slot":1}
+            {"title": "eleven", "book": "Book 3", "page": 1, "slot":1},
+            {"title": "twelve", "book": "Book 3", "page": 1, "slot":2},
+            {"title": "thirteen", "book": "Book 3", "page": 1, "slot":3},
+            {"title": "fourteen", "book": "Book 3", "page": 1, "slot":4},
+            {"title": "fifteen", "book": "Book 3", "page": 2, "slot":1}
          ]
 book4 = [
             {"title": "sixteen", "book": "Book 4", "page": 1, "slot":1},
@@ -37,7 +37,8 @@ book4 = [
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    all_books = book1 + book2 + book3 + book4
+    return render_template('index.html', dvds=all_books)
 
 @app.route('/check', methods=['POST'])
 def check():

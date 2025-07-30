@@ -17,6 +17,11 @@
         </div>
         <div id="result" class="alert alert-info d-none"></div>
         <div id="omdb" class="mt-4"></div>
+        <ul id="dvdList" class="list-group mb-4">
+            {% for dvd in dvds %}
+                <li class="list-group-item">{{ dvd.title }}</li>
+            {% endfor %}
+        </ul>
     </div>
     <script>
         function checkDVD() {
@@ -65,6 +70,25 @@
             if (event.key === 'Enter') {
                 checkDVD();
             }
+        });
+
+        document.getElementById('dvdInput').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const items = document.querySelectorAll('#dvdList li');
+            items.forEach(item => {
+                if (item.textContent.toLowerCase().includes(filter)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        document.querySelectorAll('#dvdList li').forEach(item => {
+            item.addEventListener('click', function() {
+                document.getElementById('dvdInput').value = this.textContent;
+                checkDVD();
+            });
         });
     </script>
 </body>
