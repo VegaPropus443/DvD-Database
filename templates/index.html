@@ -7,25 +7,35 @@
 <body>
     <div class="container mt-5">
         <h1 class="mb-4 text-center">DVD Database</h1>
-        <div class="row justify-content-center mb-3">
-            <div class="col-md-6">
-                <div class="input-group">
-                    <input type="text" id="dvdInput" class="form-control" placeholder="Enter DVD Title">
-                    <button class="btn btn-primary" onclick="checkDVD()">Check</button>
-                </div>
+        <div class="row justify-content-center mb-3" id="searchSection">
+            <div class="input-group mb-3">
+                <input type="text" id="dvdInput" class="form-control" placeholder="Enter DVD Title">
+                <button class="btn btn-primary" onclick="checkDVD()">Check</button>
             </div>
         </div>
+        <button id="backBtn" class="btn btn-secondary mb-3 d-none" onclick="showHome()">Back to Search</button>
         <div id="result" class="alert alert-info d-none"></div>
         <div id="omdb" class="mt-4"></div>
         <ul id="dvdList" class="list-group mb-4">
             {% for dvd in dvds %}
-                <li class="list-group-item">{{ dvd.title }}</li>
+                <li class="list-group-item" data-title="{{ dvd.title }}">
+                    <strong>{{ dvd.title }}</strong>
+                    <span class="text-muted small">
+                        ({{ dvd.book }}, Page {{ dvd.page }}, Slot {{ dvd.slot }})
+                    </span>
+                </li>
             {% endfor %}
         </ul>
     </div>
     <script>
-        function checkDVD() {
-            const item = document.getElementById('dvdInput').value;
+        function checkDVD(selectedTitle) {
+            let item;
+            if (selectedTitle) {
+                item = selectedTitle;
+                document.getElementById('dvdInput').value = selectedTitle;
+            } else {
+                item = document.getElementById('dvdInput').value;
+            }
             fetch('/check', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -33,6 +43,9 @@
             })
             .then(response => response.json())
             .then(data => {
+                document.getElementById('searchSection').classList.add('d-none');
+                document.getElementById('dvdList').classList.add('d-none');
+                document.getElementById('backBtn').classList.remove('d-none');
                 const resultDiv = document.getElementById('result');
                 if (data.location && data.omdb) {
                     resultDiv.classList.remove('d-none');
@@ -66,12 +79,7 @@
             });
         }
 
-        document.getElementById('dvdInput').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                checkDVD();
-            }
-        });
-
+        // Filter the list as you type
         document.getElementById('dvdInput').addEventListener('input', function() {
             const filter = this.value.toLowerCase();
             const items = document.querySelectorAll('#dvdList li');
@@ -84,11 +92,32 @@
             });
         });
 
+        // Make clicking a DVD search for it and hide the list/search
         document.querySelectorAll('#dvdList li').forEach(item => {
             item.addEventListener('click', function() {
-                document.getElementById('dvdInput').value = this.textContent;
-                checkDVD();
+                checkDVD(this.getAttribute('data-title'));
             });
+        });
+
+        // Show home/list/search again
+        function showHome() {
+            document.getElementById('searchSection').classList.remove('d-none');
+            document.getElementById('dvdList').classList.remove('d-none');
+            document.getElementById('backBtn').classList.add('d-none');
+            document.getElementById('result').classList.add('d-none');
+            document.getElementById('omdb').innerHTML = '';
+            document.getElementById('dvdInput').value = '';
+            // Reset list filter
+            document.querySelectorAll('#dvdList li').forEach(item => {
+                item.style.display = '';
+            });
+        }
+
+        // Allow pressing Enter to search
+        document.getElementById('dvdInput').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                checkDVD();
+            }
         });
     </script>
 </body>
